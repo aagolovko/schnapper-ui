@@ -1,0 +1,118 @@
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {MatTable, MatTableDataSource} from '@angular/material/table'
+import {ArticlesService} from "../services/articles.service";
+import {Article} from "../models/article-type";
+import {SelectionModel} from '@angular/cdk/collections';
+import {LatLngBounds} from "leaflet";
+import {MapService} from "src/app/services/map.service";
+import {MatPaginator} from "@angular/material/paginator";
+
+@Component({
+  selector: 'app-list',
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.css']
+})
+export class ListComponent implements OnInit {
+
+  idSelected: string
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  pgIndex= 2
+  firstLastButtons= true
+  pnDisabled= true
+  hdPageSize= true
+  pageSizeOptions = "[5, 10, 20]"
+
+  @ViewChild('matTable', {static: true}) matTable!: MatTable<any>
+
+  displayedColumns: string[] = ['select', 'priceEur', 'image', 'locationStr', 'title'];
+
+  dataSource = new MatTableDataSource<Article>([]);
+
+  selection = new SelectionModel<Article>(true, []);
+
+  constructor(
+    private articlesService: ArticlesService,
+    private mapService: MapService
+  ) {
+  }
+
+  ngOnInit() {
+    this.mapService.currentMapBounds.subscribe(mapBounds => {
+      this.loadArticles(mapBounds)
+      this.matTable.renderRows()
+    })
+  }
+
+  @HostListener('mouseover', ['$event'])
+  onMouseOver(event: any) {
+    if (event.target.localName == "td" && event.target.getAttribute("id")) {
+      const mouseIsOnId = event.target.getAttribute("id")
+      if (mouseIsOnId && this.idSelected != mouseIsOnId) {
+        this.idSelected = mouseIsOnId
+      }
+    }
+  }
+
+  loadArticles(mapBounds: LatLngBounds) {
+    // TO-DO: we have a problem here: the articles are loaded (at least) twice
+    this.articlesService.getArticlesBounded(mapBounds).subscribe(clients => {
+      const articles$ = (clients.data as any).articlesBounded as Array<Article>
+      console.log(`Fetched articles: ${articles$.length}`)
+
+      const articlesSorted = [...articles$]
+        .filter( a => !a?.isFavorite)
+        .sort((a, b) => a.priceEur - b.priceEur)
+      this.dataSource = new MatTableDataSource<Article>(articlesSorted)
+
+      this.dataSource.paginator = this.paginator
+    });
+  }
+
+  doIgnore(article: any) {
+    this.articlesService.ignoreArticle(article.id);
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  ignoreSelected() {
+    console.log("Number of articles to be ignored: " + this.selection.selected.length)
+    this.selection.selected.forEach((article: Article) => {
+      this.articlesService.ignoreArticle(article.id)
+    })
+  }
+
+  favoriteSelected() {
+    console.log("Number of articles to be favoritized: " + this.selection.selected.length)
+    this.selection.selected.forEach((article: Article) => {
+      this.articlesService.favoriteArticle(article.id)
+    })
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach((row: Article) => this.selection.select(row));
+  }
+
+  revertSelection() {
+    this.dataSource.data.forEach((row: Article) => {
+      if (this.selection.isSelected(row)) {
+        this.selection.deselect(row)
+      } else {
+        this.selection.select(row)
+      }
+
+    });
+  }
+
+  logSelection() {
+    this.selection.selected.forEach((s: Article) => console.log(s.href));
+  }
+}

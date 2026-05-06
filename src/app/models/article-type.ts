@@ -1,0 +1,16 @@
+export interface Article {
+  href: string;
+  hrefImage?: string;
+  title?: string;
+  id: string;
+  price?: string;
+  priceEur: number;
+  location: string;
+  isShipping?: any;
+  locationGeocoded?: any; // TODO: object has own schema, make sense to use it?
+  notes?: string;
+  isFavorite?: boolean; // TODO: how to fix? why is it red? default value possible?
+  isIgnored?: boolean;
+  createdOn: string;
+  searchKeywords: string[];
+}

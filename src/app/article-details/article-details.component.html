@@ -1,0 +1,26 @@
+<br>
+<b><a href="{{article?.href}}">{{article?.title}}</a> </b>
+<br>
+<b>searched keywords</b>: {{article?.searchKeywords}}
+<br>
+<br>
+<b>{{article?.price}}</b>
+<br>
+<br>
+{{article?.location}}
+<br>
+<br>
+{{article?.createdOn}}
+<br>
+<br>
+<p>{{article?.href?.replace("https://www.kleinanzeigen.de/", "")}}</p>
+<br>
+<img src="{{article?.hrefImage}}">
+<br>
+<br>
+Action:
+<ul>
+  <li> "s" skipk, ignore article</li>
+  <li> "f" favour, mark as favorite article</li>
+  <li>"g" go to article</li>
+</ul>

@@ -1,0 +1,11 @@
+<div *ngFor="let keywordGroup of keywordGroups; let i = index">
+  <h2>{{ keywordGroup.group }}</h2>
+  <div *ngFor="let keyword of keywordGroup.keywords; let j = index">
+    <input [(ngModel)]="keywordGroup.keywords[j]" name="keyword-{{i}}-{{j}}">
+    <button (click)="removeKeyword(i, j)">Remove</button>
+  </div>
+  <div>
+    <input #newKeyword name="newKeyword-{{i}}">
+    <button (click)="addKeyword(i, newKeyword.value); newKeyword.value=''">Add Keyword</button>
+  </div>
+</div>
