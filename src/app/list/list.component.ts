@@ -55,17 +55,15 @@ export class ListComponent implements OnInit {
   }
 
   loadArticles(mapBounds: LatLngBounds) {
-    // TO-DO: we have a problem here: the articles are loaded (at least) twice
-    this.articlesService.getArticlesBounded(mapBounds).subscribe(clients => {
-      const articles$ = (clients.data as any).articlesBounded as Array<Article>
-      console.log(`Fetched articles: ${articles$.length}`)
+    this.articlesService.getArticlesBounded(mapBounds).subscribe(articles => {
+      console.log(`Fetched articles: ${articles.length}`);
 
-      const articlesSorted = [...articles$]
-        .filter( a => !a?.isFavorite)
-        .sort((a, b) => a.priceEur - b.priceEur)
-      this.dataSource = new MatTableDataSource<Article>(articlesSorted)
+      const articlesSorted = [...articles]
+        .filter(a => !a?.isFavorite)
+        .sort((a, b) => a.priceEur - b.priceEur);
+      this.dataSource = new MatTableDataSource<Article>(articlesSorted);
 
-      this.dataSource.paginator = this.paginator
+      this.dataSource.paginator = this.paginator;
     });
   }
 

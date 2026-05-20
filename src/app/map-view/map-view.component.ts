@@ -79,9 +79,8 @@ export class MapViewComponent implements AfterViewInit {
       const bounds = this.map.getBounds();
       this.boundsAsJson = JSON.stringify(bounds)
 
-      this.articlesService.getArticlesBounded(bounds).subscribe(clients => {
-        let articles = (clients.data as any).articlesBounded as Array<Article>
-        console.log(`Fetched articles: ${articles.length}`)
+      this.articlesService.getArticlesBounded(bounds).subscribe(articles => {
+        console.log(`Fetched articles: ${articles.length}`);
         this.putArticlesOntoMap(articles);
       });
       this.mapService.mapBoundsSource.next(bounds)
