@@ -1,0 +1,60 @@
+.editor-card {
+    background: linear-gradient(150deg, #fff8ec 0%, #fff 100%);
+    border: 1px solid #e6d5b8;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+h3 {
+    margin: 0 0 0.5rem;
+}
+
+label {
+    font-weight: 600;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    border: 1px solid #bba27a;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+button {
+    border: 1px solid #c7b08d;
+    border-radius: 8px;
+    padding: 0.45rem 0.8rem;
+    cursor: pointer;
+    background: #fff;
+}
+
+button.primary {
+    background: #cf8f2f;
+    border-color: #cf8f2f;
+    color: #fff;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}

@@ -1,0 +1,19 @@
+<section class="editor-card" *ngIf="draft">
+    <h3>Edit Search Profile</h3>
+
+    <label for="profile-name">Name</label>
+    <input id="profile-name" type="text" [(ngModel)]="draft.name" />
+
+    <label for="profile-description">Description</label>
+    <textarea id="profile-description" rows="4" [(ngModel)]="draft.description"></textarea>
+
+    <label class="checkbox-row" for="profile-active">
+        <input id="profile-active" type="checkbox" [(ngModel)]="draft.isActive" />
+        Active
+    </label>
+
+    <div class="actions">
+        <button type="button" (click)="cancel.emit()">Cancel</button>
+        <button type="button" class="primary" [disabled]="!draft.name.trim()" (click)="onSave()">Save</button>
+    </div>
+</section>

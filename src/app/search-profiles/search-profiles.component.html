@@ -1,8 +1,30 @@
-<div>
-    <h2>Search Profiles</h2>
-    <ul>
-        <li *ngFor="let profile of searchProfiles">
-            {{ profile.title }}
-        </li>
-    </ul>
-</div>
+<section class="profiles-page">
+    <header>
+        <h2>Search Profiles</h2>
+        <p>Select a profile to edit name, description, and status.</p>
+    </header>
+
+    <div class="profiles-layout">
+        <ul class="profiles-list">
+            <li *ngFor="let profile of searchProfiles; trackBy: trackById"
+                [class.selected]="selectedProfile?.id === profile.id"
+                (click)="selectProfile(profile)">
+                <div class="title">{{ profile.name || profile.title || 'Untitled profile' }}</div>
+                <div class="meta">
+                    <span [class.active]="profile.isActive">{{ profile.isActive ? 'Active' : 'Inactive' }}</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="editor-area">
+            <app-search-profile-editor
+                [profile]="selectedProfile"
+                (save)="onSaveProfile($event)"
+                (cancel)="onCancelEdit()">
+            </app-search-profile-editor>
+
+            <p class="status" *ngIf="isSaving">Saving changes...</p>
+            <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+        </div>
+    </div>
+</section>

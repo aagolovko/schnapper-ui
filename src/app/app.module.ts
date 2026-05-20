@@ -17,6 +17,7 @@ import {MatTableModule} from "@angular/material/table";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {KeywordsOverviewComponent} from './keywords-overview/keywords-overview.component';
+import {SearchProfileEditorComponent} from './search-profile-editor/search-profile-editor.component';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import {KeywordsOverviewComponent} from './keywords-overview/keywords-overview.c
         MapViewComponent,
         ArticleDetailsComponent,
         KeywordsOverviewComponent,
-        SearchProfilesComponent
+        SearchProfilesComponent,
+        SearchProfileEditorComponent
     ],
     imports: [
         MatTableModule,

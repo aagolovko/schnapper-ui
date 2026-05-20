@@ -10,3 +10,14 @@ export const filterServiceProfilesQuery = gql`
     }
   }
 `;
+
+export const updateSearchProfileMutation = gql`
+  mutation updateSearchProfileMutation($id: ID!, $name: String!, $description: String!, $isActive: Boolean!) {
+    updateSearchProfile(id: $id, name: $name, description: $description, isActive: $isActive) {
+      id
+      name
+      description
+      isActive
+    }
+  }
+`;

@@ -1,0 +1,77 @@
+.profiles-page {
+    padding: 1.25rem;
+    min-height: calc(100vh - 72px);
+    background: radial-gradient(circle at top left, #ffe8bd 0%, #fff6e8 35%, #fff 100%);
+}
+
+header h2 {
+    margin: 0;
+}
+
+header p {
+    margin: 0.4rem 0 1rem;
+    color: #5c5142;
+}
+
+.profiles-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) minmax(320px, 1fr);
+    gap: 1rem;
+}
+
+.profiles-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.profiles-list li {
+    border: 1px solid #e2ceb0;
+    border-radius: 10px;
+    background: #fff;
+    padding: 0.7rem 0.8rem;
+    cursor: pointer;
+}
+
+.profiles-list li.selected {
+    border-color: #cf8f2f;
+    box-shadow: 0 0 0 1px #cf8f2f inset;
+}
+
+.title {
+    font-weight: 600;
+    color: #2f261c;
+}
+
+.meta {
+    margin-top: 0.3rem;
+    font-size: 0.9rem;
+    color: #776a57;
+}
+
+.meta .active {
+    color: #2f7d3e;
+}
+
+.editor-area {
+    min-height: 240px;
+}
+
+.status {
+    margin-top: 0.6rem;
+    color: #6f5b3f;
+}
+
+.error {
+    margin-top: 0.6rem;
+    color: #b33535;
+}
+
+@media (max-width: 900px) {
+    .profiles-layout {
+        grid-template-columns: 1fr;
+    }
+}
