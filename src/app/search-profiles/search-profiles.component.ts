@@ -1,84 +1,111 @@
-// src/app/search-profiles/search-profiles.component.ts
 import { Component, OnInit } from '@angular/core';
 import { SearchProfilesService } from '../services/searchProfiles.service';
 import { SearchProfile } from '../models/search-profile';
-import { SearchProfileDraft } from '../search-profile-editor/search-profile-editor.component';
 
 @Component({
-    selector: 'app-search-profiles',
-    templateUrl: './search-profiles.component.html',
-    styleUrls: ['./search-profiles.component.css']
+  selector: 'app-search-profiles',
+  templateUrl: './search-profiles.component.html',
+  styleUrls: ['./search-profiles.component.css'],
 })
 export class SearchProfilesComponent implements OnInit {
-    searchProfiles: SearchProfile[] = [];
-    selectedProfile: SearchProfile | null = null;
-    isSaving = false;
-    errorMessage = '';
+  searchProfiles: SearchProfile[] = [];
+  editingId: string | null = null;
+  editingData: { [key: string]: any } = {};
+  isSaving = false;
+  errorMessage = '';
+  successMessage = '';
 
-    constructor(private searchProfilesService: SearchProfilesService) {}
+  constructor(private searchProfilesService: SearchProfilesService) {}
 
-    ngOnInit(): void {
-        this.loadSearchProfiles();
-    }
+  ngOnInit(): void {
+    this.loadSearchProfiles();
+  }
 
-    loadSearchProfiles(): void {
-        this.searchProfilesService.getSearchProfiles().subscribe((profiles: SearchProfile[]) => {
-            this.searchProfiles = profiles;
+  loadSearchProfiles(): void {
+    this.searchProfilesService.getSearchProfiles().subscribe({
+      next: (profiles: SearchProfile[]) => {
+        this.searchProfiles = profiles;
+      },
+      error: (err) => {
+        console.error('Error loading search profiles:', err);
+        this.errorMessage = 'Failed to load search profiles';
+      },
+    });
+  }
 
-            if (!this.selectedProfile && profiles.length > 0) {
-                this.selectedProfile = profiles[0];
-            }
+  startEdit(profile: SearchProfile): void {
+    this.editingId = profile.id;
+    this.editingData[profile.id] = {
+      title: profile.title,
+      keywords: (profile.keywords || []).join(', '),
+      isActive: profile.isActive,
+    };
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
 
-            if (this.selectedProfile) {
-                const selected = profiles.find(profile => profile.id === this.selectedProfile?.id);
-                this.selectedProfile = selected ?? null;
-            }
-        });
-    }
+  cancelEdit(): void {
+    this.editingId = null;
+    this.editingData = {};
+    this.errorMessage = '';
+  }
 
-    selectProfile(profile: SearchProfile): void {
-        this.selectedProfile = profile;
-        this.errorMessage = '';
-    }
+  saveProfile(profile: SearchProfile): void {
+    const data = this.editingData[profile.id];
+    if (!data) return;
 
-    trackById(_index: number, profile: SearchProfile): string {
-        return profile.id;
-    }
+    this.isSaving = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-    onCancelEdit(): void {
-        this.errorMessage = '';
-    }
+    const updateData = {
+      title: data.title,
+      keywords: data.keywords.split(/[\s,]+/).filter((k: string) => k.trim()),
+      isActive: data.isActive,
+    };
 
-    onSaveProfile(draft: SearchProfileDraft): void {
-        const currentProfile = this.selectedProfile ?? this.searchProfiles.find(profile => profile.id === draft.id);
-        if (!currentProfile) {
-            this.errorMessage = 'Selected profile was not found.';
-            return;
+    this.searchProfilesService.updateSearchProfile(profile.id, updateData).subscribe({
+      next: (updated: SearchProfile) => {
+        const index = this.searchProfiles.findIndex((p) => p.id === updated.id);
+        if (index >= 0) {
+          this.searchProfiles[index] = updated;
         }
+        this.editingId = null;
+        this.editingData = {};
+        this.isSaving = false;
+        this.successMessage = `Profile "${updated.title}" updated successfully`;
+      },
+      error: (err) => {
+        console.error('Error saving profile:', err);
+        this.errorMessage = 'Failed to save profile';
+        this.isSaving = false;
+      },
+    });
+  }
 
-        const profileToUpdate: SearchProfile = {
-            ...currentProfile,
-            id: draft.id,
-            name: draft.name,
-            description: draft.description,
-            isActive: draft.isActive
-        };
+  toggleActive(profile: SearchProfile): void {
+    const updateData = {
+      title: profile.title,
+      keywords: profile.keywords || [],
+      isActive: !profile.isActive,
+    };
 
-        this.isSaving = true;
-        this.errorMessage = '';
+    this.searchProfilesService.updateSearchProfile(profile.id, updateData).subscribe({
+      next: (updated: SearchProfile) => {
+        const index = this.searchProfiles.findIndex((p) => p.id === updated.id);
+        if (index >= 0) {
+          this.searchProfiles[index] = updated;
+        }
+        this.successMessage = `Profile "${updated.title}" ${updated.isActive ? 'enabled' : 'disabled'}`;
+      },
+      error: (err) => {
+        console.error('Error toggling profile:', err);
+        this.errorMessage = 'Failed to update profile';
+      },
+    });
+  }
 
-        this.searchProfilesService.updateSearchProfile(profileToUpdate).subscribe({
-            next: updated => {
-                this.searchProfiles = this.searchProfiles.map(profile =>
-                    profile.id === updated.id ? { ...profile, ...updated } : profile
-                );
-                this.selectedProfile = this.searchProfiles.find(profile => profile.id === updated.id) ?? null;
-                this.isSaving = false;
-            },
-            error: () => {
-                this.errorMessage = 'Unable to save search profile. Please try again.';
-                this.isSaving = false;
-            }
-        });
-    }
+  trackById(_index: number, profile: SearchProfile): string {
+    return profile.id;
+  }
 }

@@ -1,30 +1,99 @@
 <section class="profiles-page">
-    <header>
-        <h2>Search Profiles</h2>
-        <p>Select a profile to edit name, description, and status.</p>
-    </header>
+  <header>
+    <h2>Search Profiles</h2>
+    <p>Manage your search profiles - enable/disable and edit keywords</p>
+  </header>
 
-    <div class="profiles-layout">
-        <ul class="profiles-list">
-            <li *ngFor="let profile of searchProfiles; trackBy: trackById"
-                [class.selected]="selectedProfile?.id === profile.id"
-                (click)="selectProfile(profile)">
-                <div class="title">{{ profile.name || profile.title || 'Untitled profile' }}</div>
-                <div class="meta">
-                    <span [class.active]="profile.isActive">{{ profile.isActive ? 'Active' : 'Inactive' }}</span>
-                </div>
-            </li>
-        </ul>
+  <div class="status-messages">
+    <p class="success" *ngIf="successMessage">✓ {{ successMessage }}</p>
+    <p class="error" *ngIf="errorMessage">✗ {{ errorMessage }}</p>
+  </div>
 
-        <div class="editor-area">
-            <app-search-profile-editor
-                [profile]="selectedProfile"
-                (save)="onSaveProfile($event)"
-                (cancel)="onCancelEdit()">
-            </app-search-profile-editor>
+  <div class="profiles-table">
+    <table *ngIf="searchProfiles.length > 0">
+      <thead>
+        <tr>
+          <th style="width: 50px;">Active</th>
+          <th style="width: 200px;">Title</th>
+          <th style="flex: 1;">Keywords</th>
+          <th style="width: 150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let profile of searchProfiles; trackBy: trackById" [class.editing]="editingId === profile.id">
+          <td class="checkbox-cell">
+            <input
+              type="checkbox"
+              [checked]="profile.isActive"
+              (change)="toggleActive(profile)"
+              [disabled]="editingId === profile.id"
+              title="Enable/disable this profile"
+            />
+          </td>
 
-            <p class="status" *ngIf="isSaving">Saving changes...</p>
-            <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-        </div>
+          <td class="title-cell">
+            <div *ngIf="editingId !== profile.id" class="text-display">
+              {{ profile.title || 'Untitled' }}
+            </div>
+            <input
+              *ngIf="editingId === profile.id"
+              type="text"
+              class="text-input"
+              [(ngModel)]="editingData[profile.id].title"
+              placeholder="Profile title"
+            />
+          </td>
+
+          <td class="keywords-cell">
+            <div *ngIf="editingId !== profile.id" class="text-display keywords">
+              <span *ngIf="profile.keywords && profile.keywords.length > 0">
+                {{ profile.keywords.join(', ') }}
+              </span>
+              <span *ngIf="!profile.keywords || profile.keywords.length === 0" class="empty">
+                (no keywords)
+              </span>
+            </div>
+            <textarea
+              *ngIf="editingId === profile.id"
+              class="text-input keywords-input"
+              [(ngModel)]="editingData[profile.id].keywords"
+              placeholder="Enter keywords separated by comma or space"
+              rows="2"
+            ></textarea>
+          </td>
+
+          <td class="actions-cell">
+            <button
+              *ngIf="editingId !== profile.id"
+              class="btn btn-edit"
+              (click)="startEdit(profile)"
+              [disabled]="isSaving"
+            >
+              Edit
+            </button>
+            <div *ngIf="editingId === profile.id" class="action-buttons">
+              <button
+                class="btn btn-save"
+                (click)="saveProfile(profile)"
+                [disabled]="isSaving"
+              >
+                {{ isSaving ? 'Saving...' : 'Save' }}
+              </button>
+              <button
+                class="btn btn-cancel"
+                (click)="cancelEdit()"
+                [disabled]="isSaving"
+              >
+                Cancel
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="searchProfiles.length === 0" class="no-profiles">
+      <p>No search profiles found</p>
     </div>
+  </div>
 </section>

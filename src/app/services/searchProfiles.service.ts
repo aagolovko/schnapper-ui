@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { SearchProfile } from '../models/search-profile';
 
 @Injectable({
@@ -11,17 +11,19 @@ export class SearchProfilesService {
   constructor(private http: HttpClient) {}
 
   getSearchProfiles(): Observable<SearchProfile[]> {
-    // TODO: Add search profiles endpoint to backend
-    return of([]);
+    return this.http.get<SearchProfile[]>(`${environment.apiUrl}/search-profiles`);
   }
 
-  updateSearchProfile(profile: SearchProfile): Observable<SearchProfile> {
+  updateSearchProfile(profileId: string, profile: Partial<SearchProfile>): Observable<SearchProfile> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
 
-    // TODO: Add search profiles update endpoint to backend
-    return of(profile);
+    return this.http.put<SearchProfile>(
+      `${environment.apiUrl}/search-profiles/${profileId}`,
+      profile,
+      { headers }
+    );
   }
 }
