@@ -13,6 +13,32 @@ header p {
   color: #5c5142;
 }
 
+.toolbar {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-add {
+  background-color: #2e7d32;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add:hover:not(:disabled) {
+  background-color: #1b5e20;
+}
+
+.btn-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .status-messages {
   margin-bottom: 1rem;
 }
@@ -34,6 +60,76 @@ header p {
   background-color: #ffebee;
   color: #c62828;
   border: 1px solid #ffcdd2;
+}
+
+.add-form {
+  margin-bottom: 2rem;
+}
+
+.form-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #cf8f2f;
+  max-width: 500px;
+}
+
+.form-card h3 {
+  margin: 0 0 1.5rem 0;
+  color: #2f261c;
+  font-size: 1.1rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #2f261c;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #cf8f2f;
+  box-shadow: 0 0 4px rgba(207, 143, 47, 0.2);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.form-actions .btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .profiles-table {
@@ -138,18 +234,27 @@ tbody tr.editing {
   text-align: right;
 }
 
+.action-buttons,
+.edit-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .btn {
   padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
   border: none;
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
-.btn:first-child {
-  margin-left: 0;
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-edit {
@@ -159,6 +264,15 @@ tbody tr.editing {
 
 .btn-edit:hover:not(:disabled) {
   background-color: #b8790a;
+}
+
+.btn-remove {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.btn-remove:hover:not(:disabled) {
+  background-color: #b71c1c;
 }
 
 .btn-save {
@@ -179,21 +293,15 @@ tbody tr.editing {
   background-color: #aaa;
 }
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
 .no-profiles {
   padding: 2rem;
   text-align: center;
   color: #999;
+}
+
+.no-profiles p {
+  margin: 0 0 1rem 0;
+  font-size: 1.05rem;
 }
 
 @media (max-width: 900px) {
@@ -213,5 +321,14 @@ tbody tr.editing {
   .btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
+  }
+
+  .action-buttons,
+  .edit-buttons {
+    flex-direction: column;
+  }
+
+  .form-card {
+    max-width: 100%;
   }
 }

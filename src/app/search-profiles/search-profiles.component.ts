@@ -11,7 +11,10 @@ export class SearchProfilesComponent implements OnInit {
   searchProfiles: SearchProfile[] = [];
   editingId: string | null = null;
   editingData: { [key: string]: any } = {};
+  showAddForm = false;
+  newProfileData = { title: '', keywords: '' };
   isSaving = false;
+  isDeleting: { [key: string]: boolean } = {};
   errorMessage = '';
   successMessage = '';
 
@@ -29,6 +32,53 @@ export class SearchProfilesComponent implements OnInit {
       error: (err) => {
         console.error('Error loading search profiles:', err);
         this.errorMessage = 'Failed to load search profiles';
+      },
+    });
+  }
+
+  openAddForm(): void {
+    this.showAddForm = true;
+    this.newProfileData = { title: '', keywords: '' };
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  cancelAddForm(): void {
+    this.showAddForm = false;
+    this.newProfileData = { title: '', keywords: '' };
+    this.errorMessage = '';
+  }
+
+  createProfile(): void {
+    if (!this.newProfileData.title.trim()) {
+      this.errorMessage = 'Profile title is required';
+      return;
+    }
+
+    this.isSaving = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const newProfile = {
+      title: this.newProfileData.title,
+      keywords: this.newProfileData.keywords
+        .split(/[\s,]+/)
+        .filter((k: string) => k.trim()),
+      isActive: true,
+    };
+
+    this.searchProfilesService.createSearchProfile(newProfile).subscribe({
+      next: (created: SearchProfile) => {
+        this.searchProfiles.push(created);
+        this.showAddForm = false;
+        this.newProfileData = { title: '', keywords: '' };
+        this.isSaving = false;
+        this.successMessage = `Profile "${created.title}" created successfully`;
+      },
+      error: (err) => {
+        console.error('Error creating profile:', err);
+        this.errorMessage = 'Failed to create profile';
+        this.isSaving = false;
       },
     });
   }
@@ -79,6 +129,29 @@ export class SearchProfilesComponent implements OnInit {
         console.error('Error saving profile:', err);
         this.errorMessage = 'Failed to save profile';
         this.isSaving = false;
+      },
+    });
+  }
+
+  deleteProfile(profile: SearchProfile): void {
+    if (!confirm(`Are you sure you want to delete "${profile.title}"?`)) {
+      return;
+    }
+
+    this.isDeleting[profile.id] = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.searchProfilesService.deleteSearchProfile(profile.id).subscribe({
+      next: () => {
+        this.searchProfiles = this.searchProfiles.filter((p) => p.id !== profile.id);
+        this.isDeleting[profile.id] = false;
+        this.successMessage = `Profile "${profile.title}" deleted successfully`;
+      },
+      error: (err) => {
+        console.error('Error deleting profile:', err);
+        this.errorMessage = 'Failed to delete profile';
+        this.isDeleting[profile.id] = false;
       },
     });
   }

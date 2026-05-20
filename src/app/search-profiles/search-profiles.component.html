@@ -4,9 +4,58 @@
     <p>Manage your search profiles - enable/disable and edit keywords</p>
   </header>
 
+  <div class="toolbar">
+    <button class="btn btn-add" (click)="openAddForm()" [disabled]="isSaving">
+      + Add Search Profile
+    </button>
+  </div>
+
   <div class="status-messages">
     <p class="success" *ngIf="successMessage">✓ {{ successMessage }}</p>
     <p class="error" *ngIf="errorMessage">✗ {{ errorMessage }}</p>
+  </div>
+
+  <!-- Add Profile Form -->
+  <div class="add-form" *ngIf="showAddForm">
+    <div class="form-card">
+      <h3>Create New Search Profile</h3>
+
+      <div class="form-group">
+        <label>Profile Title *</label>
+        <input
+          type="text"
+          [(ngModel)]="newProfileData.title"
+          placeholder="Enter profile title"
+          (keyup.enter)="createProfile()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Keywords (optional)</label>
+        <textarea
+          [(ngModel)]="newProfileData.keywords"
+          placeholder="Enter keywords separated by comma or space"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          class="btn btn-save"
+          (click)="createProfile()"
+          [disabled]="isSaving"
+        >
+          {{ isSaving ? 'Creating...' : 'Create Profile' }}
+        </button>
+        <button
+          class="btn btn-cancel"
+          (click)="cancelAddForm()"
+          [disabled]="isSaving"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="profiles-table">
@@ -16,11 +65,14 @@
           <th style="width: 50px;">Active</th>
           <th style="width: 200px;">Title</th>
           <th style="flex: 1;">Keywords</th>
-          <th style="width: 150px;">Actions</th>
+          <th style="width: 200px;">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let profile of searchProfiles; trackBy: trackById" [class.editing]="editingId === profile.id">
+        <tr
+          *ngFor="let profile of searchProfiles; trackBy: trackById"
+          [class.editing]="editingId === profile.id"
+        >
           <td class="checkbox-cell">
             <input
               type="checkbox"
@@ -45,11 +97,17 @@
           </td>
 
           <td class="keywords-cell">
-            <div *ngIf="editingId !== profile.id" class="text-display keywords">
+            <div
+              *ngIf="editingId !== profile.id"
+              class="text-display keywords"
+            >
               <span *ngIf="profile.keywords && profile.keywords.length > 0">
                 {{ profile.keywords.join(', ') }}
               </span>
-              <span *ngIf="!profile.keywords || profile.keywords.length === 0" class="empty">
+              <span
+                *ngIf="!profile.keywords || profile.keywords.length === 0"
+                class="empty"
+              >
                 (no keywords)
               </span>
             </div>
@@ -63,15 +121,23 @@
           </td>
 
           <td class="actions-cell">
-            <button
-              *ngIf="editingId !== profile.id"
-              class="btn btn-edit"
-              (click)="startEdit(profile)"
-              [disabled]="isSaving"
-            >
-              Edit
-            </button>
-            <div *ngIf="editingId === profile.id" class="action-buttons">
+            <div *ngIf="editingId !== profile.id" class="action-buttons">
+              <button
+                class="btn btn-edit"
+                (click)="startEdit(profile)"
+                [disabled]="isSaving"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-remove"
+                (click)="deleteProfile(profile)"
+                [disabled]="isSaving || isDeleting[profile.id]"
+              >
+                {{ isDeleting[profile.id] ? 'Deleting...' : 'Remove' }}
+              </button>
+            </div>
+            <div *ngIf="editingId === profile.id" class="edit-buttons">
               <button
                 class="btn btn-save"
                 (click)="saveProfile(profile)"
@@ -94,6 +160,9 @@
 
     <div *ngIf="searchProfiles.length === 0" class="no-profiles">
       <p>No search profiles found</p>
+      <button class="btn btn-add" (click)="openAddForm()">
+        Create your first profile
+      </button>
     </div>
   </div>
 </section>
