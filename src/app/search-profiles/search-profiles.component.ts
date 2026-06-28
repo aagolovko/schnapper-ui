@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { SearchProfilesService } from '../services/searchProfiles.service';
 import { SearchProfile } from '../models/search-profile';
 
@@ -127,7 +128,7 @@ export class SearchProfilesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error saving profile:', err);
-        this.errorMessage = 'Failed to save profile';
+        this.errorMessage = this.getRequestErrorMessage(err, 'Failed to save profile');
         this.isSaving = false;
       },
     });
@@ -173,12 +174,21 @@ export class SearchProfilesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error toggling profile:', err);
-        this.errorMessage = 'Failed to update profile';
+        this.errorMessage = this.getRequestErrorMessage(err, 'Failed to update profile');
       },
     });
   }
 
   trackById(_index: number, profile: SearchProfile): string {
     return profile.id;
+  }
+
+  private getRequestErrorMessage(err: unknown, fallback: string): string {
+    if (err instanceof HttpErrorResponse) {
+      const serverMessage = typeof err.error === 'object' ? err.error?.error : err.error;
+      return serverMessage ? `${fallback}: ${serverMessage}` : `${fallback} (${err.status})`;
+    }
+
+    return fallback;
   }
 }
