@@ -3,12 +3,20 @@ table, th, td {
 }
 
 tr.favorite-row {
-  background-color: #ffebee;
+  background-color: #e8f5e9;
 }
 
 tr.favorite-row td,
 tr.favorite-row a {
-  color: #b71c1c;
+  color: #1b5e20;
+}
+
+tr.favorite-row:hover {
+  background-color: #d9f0dc;
+}
+
+tr.favorite-row td {
+  border-color: #a5d6a7;
 }
 
 img {
