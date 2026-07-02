@@ -227,7 +227,7 @@ tbody tr.editing {
 
 .keywords-input {
   resize: none;
-  min-height: 300px;
+  min-height: 500px;
 }
 
 .actions-cell {

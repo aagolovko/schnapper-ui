@@ -21,6 +21,13 @@ export class SearchProfilesComponent implements OnInit {
 
   constructor(private searchProfilesService: SearchProfilesService) {}
 
+  private parseKeywords(input: string): string[] {
+    return input
+      .split(/\r?\n/)
+      .map((k: string) => k.trim())
+      .filter((k: string) => k.length > 0);
+  }
+
   ngOnInit(): void {
     this.loadSearchProfiles();
   }
@@ -62,9 +69,7 @@ export class SearchProfilesComponent implements OnInit {
 
     const newProfile = {
       title: this.newProfileData.title,
-      keywords: this.newProfileData.keywords
-        .split(/[\s,]+/)
-        .filter((k: string) => k.trim()),
+      keywords: this.parseKeywords(this.newProfileData.keywords),
       isActive: true,
     };
 
@@ -88,7 +93,7 @@ export class SearchProfilesComponent implements OnInit {
     this.editingId = profile.id;
     this.editingData[profile.id] = {
       title: profile.title,
-      keywords: (profile.keywords || []).join(', '),
+      keywords: (profile.keywords || []).join('\n'),
       isActive: profile.isActive,
     };
     this.errorMessage = '';
@@ -111,7 +116,7 @@ export class SearchProfilesComponent implements OnInit {
 
     const updateData = {
       title: data.title,
-      keywords: data.keywords.split(/[\s,]+/).filter((k: string) => k.trim()),
+      keywords: this.parseKeywords(data.keywords),
       isActive: data.isActive,
     };
 

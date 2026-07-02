@@ -34,7 +34,7 @@
         <label>Keywords (optional)</label>
         <textarea
           [(ngModel)]="newProfileData.keywords"
-          placeholder="Enter keywords separated by comma or space"
+          placeholder="Enter one search sentence per line"
           rows="3"
         ></textarea>
       </div>
@@ -115,8 +115,8 @@
               *ngIf="editingId === profile.id"
               class="text-input keywords-input"
               [(ngModel)]="editingData[profile.id].keywords"
-              placeholder="Enter keywords separated by comma or space"
-              rows="2"
+              placeholder="Enter one search sentence per line"
+              rows="10"
             ></textarea>
           </td>
 

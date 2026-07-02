@@ -27,7 +27,7 @@ export class MapViewComponent implements AfterViewInit {
     const articleId = event.target.getAttribute("data-article-id")
     if (articleId && event.target.classList.contains("ignore-link")) {
       console.log(`Ignoring article ...`);
-      this.doIgnoreById(articleId)
+      this.doDeleteById(articleId)
       event.target.parentElement.hidden = true
     } else if (articleId && event.target.classList.contains("favorite-link")) {
       console.log(`Favorite article ...`);
@@ -139,11 +139,11 @@ export class MapViewComponent implements AfterViewInit {
   }
 
   doIgnore(article: any) {
-    this.articlesService.ignoreArticle(article.id);
+    this.articlesService.deleteArticle(article.id);
   }
 
-  doIgnoreById(articleId: string) {
-    this.articlesService.ignoreArticle(articleId);
+  doDeleteById(articleId: string) {
+    this.articlesService.deleteArticle(articleId);
   }
 
   doFavoriteById(articleId: string) {

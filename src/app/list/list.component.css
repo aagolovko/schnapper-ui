@@ -2,6 +2,15 @@ table, th, td {
   border: 1px solid;
 }
 
+tr.favorite-row {
+  background-color: #ffebee;
+}
+
+tr.favorite-row td,
+tr.favorite-row a {
+  color: #b71c1c;
+}
+
 img {
   width: 70%;
 }

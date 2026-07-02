@@ -25,7 +25,7 @@ export class ListComponent implements OnInit {
 
   @ViewChild('matTable', {static: true}) matTable!: MatTable<any>
 
-  displayedColumns: string[] = ['select', 'priceEur', 'image', 'locationStr', 'title'];
+  displayedColumns: string[] = ['select', 'price', 'image', 'locationStr', 'title'];
 
   dataSource = new MatTableDataSource<Article>([]);
 
@@ -59,8 +59,7 @@ export class ListComponent implements OnInit {
       console.log(`Fetched articles: ${articles.length}`);
 
       const articlesSorted = [...articles]
-        .filter(a => !a?.isFavorite)
-        .sort((a, b) => a.priceEur - b.priceEur);
+        .sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
       this.dataSource = new MatTableDataSource<Article>(articlesSorted);
 
       this.dataSource.paginator = this.paginator;
@@ -68,7 +67,7 @@ export class ListComponent implements OnInit {
   }
 
   doIgnore(article: any) {
-    this.articlesService.ignoreArticle(article.id);
+    this.articlesService.deleteArticle(article.id);
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -83,12 +82,16 @@ export class ListComponent implements OnInit {
     this.selection.selected.forEach((article: Article) => {
       this.articlesService.ignoreArticle(article.id)
     })
+    const deletedIds = new Set(this.selection.selected.map((article: Article) => article.id));
+    this.dataSource.data = this.dataSource.data.filter((article) => !deletedIds.has(article.id));
+    this.selection.clear();
   }
 
   favoriteSelected() {
     console.log("Number of articles to be favoritized: " + this.selection.selected.length)
     this.selection.selected.forEach((article: Article) => {
-      this.articlesService.favoriteArticle(article.id)
+      this.articlesService.favoriteArticle(article.id);
+      article.isFavorite = true;
     })
   }
 

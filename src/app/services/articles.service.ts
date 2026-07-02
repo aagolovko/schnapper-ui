@@ -27,9 +27,9 @@ export class ArticlesService implements OnDestroy {
     this.unlistener = this.renderer.listen(
       'document',
       'keydown',
-      (event: KeyboardEvent) => {
+        (event: KeyboardEvent) => {
         if (event.key === 's') {
-          this.ignoreArticle(this.currentArticleAsSelection.id);
+          this.deleteArticle(this.currentArticleAsSelection.id);
           this.currentMarkerAsSelection.remove();
         } else if (event.key === 'f') {
           this.favoriteArticle(this.currentArticleAsSelection.id);
@@ -56,6 +56,22 @@ export class ArticlesService implements OnDestroy {
     this.currentMarkerAsSelection = marker;
   }
 
+  private buildAuthHeaders() {
+    const token = localStorage.getItem('token');
+    if (!token || token === 'null' || token === 'undefined') {
+      return undefined;
+    }
+
+    const trimmedToken = token.trim();
+    if (trimmedToken.split('.').length !== 3) {
+      return undefined;
+    }
+
+    return new HttpHeaders({
+      Authorization: `Bearer ${trimmedToken}`,
+    });
+  }
+
   getArticles() {
     return this.http.get<Article[]>(`${environment.apiUrl}/articles`);
   }
@@ -70,25 +86,21 @@ export class ArticlesService implements OnDestroy {
     this.unlistener();
   }
 
+  deleteArticle(pId: string) {
+    console.log(`Delete item with id: ${pId}`);
+    const headers = this.buildAuthHeaders();
+    this.http.delete<any>(`${environment.apiUrl}/articles/${pId}`, headers ? { headers } : {}).subscribe();
+  }
+
   ignoreArticle(pId: string) {
-    console.log(`Set ignorance flag for item with id: ${pId}`);
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-    this.http
-      .post<any>(`${environment.apiUrl}/articles/${pId}/ignore`, {}, { headers })
-      .subscribe();
+    this.deleteArticle(pId);
   }
 
   favoriteArticle(pId: string) {
     console.log(`Set favorite flag for item with id: ${pId}`);
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
+    const headers = this.buildAuthHeaders();
     this.http
-      .post<any>(`${environment.apiUrl}/articles/${pId}/favorite`, {}, { headers })
+      .post<any>(`${environment.apiUrl}/articles/${pId}/favorite`, {}, headers ? { headers } : {})
       .subscribe();
   }
 }
