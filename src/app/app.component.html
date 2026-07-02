@@ -1,16 +1,26 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-kicker">Schnapper</div>
+    <h1>{{ title }}</h1>
+  </div>
 
+  <nav class="nav-links" aria-label="Primary">
+    <a routerLink="/map-view" routerLinkActive="active">Map View</a>
+    <a routerLink="/searches" routerLinkActive="active">Searches</a>
+  </nav>
 
+  <div class="auth-panel">
+    <div #googleButton class="google-button" [class.hidden]="user || !googleReady"></div>
+    <div class="auth-info" *ngIf="user">
+      <div class="auth-name">{{ user.name || user.email }}</div>
+      <button type="button" class="sign-out" (click)="signOut()">Sign out</button>
+    </div>
+    <div class="auth-status" *ngIf="!user && signInMessage">{{ signInMessage }}</div>
+    <div class="auth-error" *ngIf="signInError">{{ signInError }}</div>
+  </div>
+</header>
 
-<nav>
-    <ul>
-        <li><a routerLink="/map-view" routerLinkActive="active">Map View</a></li>
-        <li><a routerLink="/searches" routerLinkActive="active">Searches</a></li>
-    </ul>
-</nav>
-
-<div class="content" role="main">
-    <router-outlet></router-outlet>
-</div>
-
-
+<main class="content" role="main">
+  <router-outlet></router-outlet>
+</main>

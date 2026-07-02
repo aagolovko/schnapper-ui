@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { ReplaySubject, Subject } from 'rxjs';
 import { Article } from 'src/app/models/article-type';
 import * as Leaflet from 'leaflet';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,8 @@ export class ArticlesService implements OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private rendererFactory: RendererFactory2
+    private rendererFactory: RendererFactory2,
+    private authService: AuthService
   ) {
     this.renderer = this.rendererFactory.createRenderer(null, null);
 
@@ -57,7 +59,7 @@ export class ArticlesService implements OnDestroy {
   }
 
   private buildAuthHeaders() {
-    const token = localStorage.getItem('token');
+    const token = this.authService.getToken();
     if (!token || token === 'null' || token === 'undefined') {
       return undefined;
     }
