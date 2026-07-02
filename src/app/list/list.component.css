@@ -33,6 +33,12 @@ img {
   white-space: wrap;
 }
 
+.keywords-cell {
+  font-size: 12px;
+  white-space: normal;
+  max-width: 240px;
+}
+
 .article-price {
   font-size: 12px;
   white-space: nowrap;

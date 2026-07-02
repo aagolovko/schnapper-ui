@@ -25,7 +25,7 @@ export class ListComponent implements OnInit {
 
   @ViewChild('matTable', {static: true}) matTable!: MatTable<any>
 
-  displayedColumns: string[] = ['select', 'price', 'image', 'locationStr', 'title'];
+  displayedColumns: string[] = ['select', 'price', 'searchKeywords', 'image', 'locationStr', 'title'];
 
   dataSource = new MatTableDataSource<Article>([]);
 
@@ -58,9 +58,7 @@ export class ListComponent implements OnInit {
     this.articlesService.getArticlesBounded(mapBounds).subscribe(articles => {
       console.log(`Fetched articles: ${articles.length}`);
 
-      const articlesSorted = [...articles]
-        .sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-      this.dataSource = new MatTableDataSource<Article>(articlesSorted);
+      this.dataSource = new MatTableDataSource<Article>(articles);
 
       this.dataSource.paginator = this.paginator;
     });
