@@ -12,6 +12,26 @@
 
   <div class="auth-panel">
     <div #googleButton class="google-button" [class.hidden]="user || !googleReady"></div>
+    <div class="crawler-panel">
+      <div class="crawler-heading">Crawler</div>
+      <div class="crawler-status" [class.running]="crawlerStatus?.isRunning">
+        {{ crawlerStatus ? (crawlerStatus.isRunning ? 'running' : 'idle') : 'loading...' }}
+      </div>
+      <div class="crawler-meta">Last run: {{ formatTimestamp(crawlerStatus?.lastRunAt) }}</div>
+      <div class="crawler-meta">Next run: {{ formatTimestamp(crawlerStatus?.nextRunAt) }}</div>
+      <button
+        *ngIf="user"
+        type="button"
+        class="crawler-button"
+        [disabled]="crawlerBusy || crawlerStatus?.isRunning"
+        (click)="triggerCrawler()"
+      >
+        {{ crawlerBusy ? 'Starting...' : 'Run now' }}
+      </button>
+      <div class="crawler-message" *ngIf="crawlerActionMessage">{{ crawlerActionMessage }}</div>
+      <div class="crawler-error" *ngIf="crawlerActionError">{{ crawlerActionError }}</div>
+      <div class="crawler-error" *ngIf="crawlerStatusError">{{ crawlerStatusError }}</div>
+    </div>
     <div class="auth-info" *ngIf="user">
       <div class="auth-name">{{ user.name || user.email }}</div>
       <button type="button" class="sign-out" (click)="signOut()">Sign out</button>

@@ -1,6 +1,7 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AuthService, GoogleAuthUser } from './services/auth.service';
+import { CrawlerService, CrawlerStatus } from './services/crawler.service';
 
 interface GoogleCredentialResponse {
   credential?: string;
@@ -38,28 +39,45 @@ declare global {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'my-angular';
   readonly googleClientId = environment.googleClientId;
   user: GoogleAuthUser | null = null;
+  crawlerStatus: CrawlerStatus | null = null;
+  crawlerStatusError = '';
+  crawlerActionMessage = '';
+  crawlerActionError = '';
+  crawlerBusy = false;
   signInMessage = '';
   signInError = '';
   googleReady = false;
   private googleInitAttempts = 0;
+  private crawlerStatusTimer?: number;
 
   @ViewChild('googleButton', { static: false })
   googleButton?: ElementRef<HTMLDivElement>;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private crawlerService: CrawlerService
+  ) {
     this.user = this.authService.getUser();
   }
 
   ngOnInit(): void {
     this.canonicalizeDevOrigin();
+    this.refreshCrawlerStatus();
+    this.crawlerStatusTimer = window.setInterval(() => this.refreshCrawlerStatus(), 60000);
   }
 
   ngAfterViewInit(): void {
     this.renderGoogleButton();
+  }
+
+  ngOnDestroy(): void {
+    if (this.crawlerStatusTimer) {
+      window.clearInterval(this.crawlerStatusTimer);
+    }
   }
 
   signOut(): void {
@@ -68,6 +86,27 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.signInMessage = 'Signed out';
     this.signInError = '';
     window.google?.accounts.id.disableAutoSelect();
+  }
+
+  triggerCrawler(): void {
+    this.crawlerBusy = true;
+    this.crawlerActionError = '';
+    this.crawlerActionMessage = 'Starting crawler...';
+
+    this.crawlerService.triggerCrawlerRun().subscribe({
+      next: ({ jobName }) => {
+        this.crawlerActionMessage = `Triggered ${jobName}`;
+        this.crawlerBusy = false;
+        this.refreshCrawlerStatus();
+      },
+      error: (err) => {
+        console.error('Crawler trigger failed:', err);
+        this.crawlerActionError = 'Crawler trigger failed';
+        this.crawlerActionMessage = '';
+        this.crawlerBusy = false;
+        this.refreshCrawlerStatus();
+      },
+    });
   }
 
   private renderGoogleButton(): void {
@@ -110,6 +149,32 @@ export class AppComponent implements OnInit, AfterViewInit {
     const nextUrl = new URL(window.location.href);
     nextUrl.hostname = 'localhost';
     window.location.replace(nextUrl.toString());
+  }
+
+  private refreshCrawlerStatus(): void {
+    this.crawlerService.getCrawlerStatus().subscribe({
+      next: (status) => {
+        this.crawlerStatus = status;
+        this.crawlerStatusError = '';
+      },
+      error: (err) => {
+        console.error('Crawler status failed:', err);
+        this.crawlerStatusError = 'Crawler status unavailable';
+      },
+    });
+  }
+
+  formatTimestamp(value: string | null | undefined): string {
+    if (!value) {
+      return '-';
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return '-';
+    }
+
+    return parsed.toLocaleString();
   }
 
   private handleGoogleCredential(response: GoogleCredentialResponse): void {

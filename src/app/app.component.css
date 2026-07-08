@@ -57,6 +57,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .google-button.hidden {
@@ -67,6 +69,63 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.crawler-panel {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 15rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(31, 36, 48, 0.12);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.crawler-heading {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a5d16;
+}
+
+.crawler-status {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #6b4a0f;
+}
+
+.crawler-status.running {
+  color: #1f7a3b;
+}
+
+.crawler-meta,
+.crawler-message,
+.crawler-error {
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.crawler-button {
+  margin-top: 0.35rem;
+  border: 1px solid rgba(31, 36, 48, 0.18);
+  background: #1f2430;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+}
+
+.crawler-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.crawler-message {
+  color: #1f2430;
+}
+
+.crawler-error {
+  color: #b00020;
 }
 
 .auth-name {
