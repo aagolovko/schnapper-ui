@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SearchProfilesService } from '../services/searchProfiles.service';
 import { SearchProfile } from '../models/search-profile';
+import { ArticlesService } from '../services/articles.service';
 
 @Component({
   selector: 'app-search-profiles',
@@ -16,10 +17,14 @@ export class SearchProfilesComponent implements OnInit {
   newProfileData = { title: '', keywords: '' };
   isSaving = false;
   isDeleting: { [key: string]: boolean } = {};
+  isDeletingKeyword: { [key: string]: boolean } = {};
   errorMessage = '';
   successMessage = '';
 
-  constructor(private searchProfilesService: SearchProfilesService) {}
+  constructor(
+    private searchProfilesService: SearchProfilesService,
+    private articlesService: ArticlesService
+  ) {}
 
   private parseKeywords(input: string): string[] {
     return input
@@ -158,6 +163,37 @@ export class SearchProfilesComponent implements OnInit {
         console.error('Error deleting profile:', err);
         this.errorMessage = 'Failed to delete profile';
         this.isDeleting[profile.id] = false;
+      },
+    });
+  }
+
+  deleteKeyword(profile: SearchProfile, keyword: string): void {
+    const trimmedKeyword = keyword.trim();
+    if (!trimmedKeyword) {
+      return;
+    }
+
+    const keywordKey = `${profile.id}:${trimmedKeyword}`;
+    this.isDeletingKeyword[keywordKey] = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.articlesService.deleteByKeyword(trimmedKeyword).subscribe({
+      next: (result: { deletedCount?: number; removedFromProfiles?: number }) => {
+        const current = this.searchProfiles.find((p) => p.id === profile.id);
+        if (current) {
+          current.keywords = (current.keywords || []).map((item) =>
+            item === trimmedKeyword ? `-${trimmedKeyword}` : item
+          );
+        }
+
+        this.isDeletingKeyword[keywordKey] = false;
+        this.successMessage = `Keyword "${trimmedKeyword}" marked as disabled and ${result.deletedCount || 0} articles deleted`;
+      },
+      error: (err) => {
+        console.error('Error deleting by keyword:', err);
+        this.errorMessage = this.getRequestErrorMessage(err, 'Failed to delete by keyword');
+        this.isDeletingKeyword[keywordKey] = false;
       },
     });
   }

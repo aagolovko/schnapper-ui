@@ -54,6 +54,22 @@ img {
   max-width: 240px;
 }
 
+.keyword-item {
+  display: inline;
+}
+
+.keyword-remove {
+  color: #b00020;
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 0.2rem;
+}
+
+.keyword-remove:hover {
+  color: #6d0012;
+}
+
 .article-price {
   font-size: 12px;
   white-space: nowrap;

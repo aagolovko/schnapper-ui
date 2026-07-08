@@ -30,6 +30,7 @@ export class ListComponent implements OnInit {
   dataSource = new MatTableDataSource<Article>([]);
 
   selection = new SelectionModel<Article>(true, []);
+  private lastBounds?: LatLngBounds;
 
   constructor(
     public articlesService: ArticlesService,
@@ -39,6 +40,7 @@ export class ListComponent implements OnInit {
 
   ngOnInit() {
     this.mapService.currentMapBounds.subscribe(mapBounds => {
+      this.lastBounds = mapBounds;
       this.loadArticles(mapBounds)
       this.matTable.renderRows()
     })
@@ -63,6 +65,24 @@ export class ListComponent implements OnInit {
 
       this.dataSource.paginator = this.paginator;
       this.selection.clear();
+    });
+  }
+
+  removeKeyword(keyword: string): void {
+    const trimmedKeyword = keyword.trim();
+    if (!trimmedKeyword) {
+      return;
+    }
+
+    this.articlesService.deleteByKeyword(trimmedKeyword).subscribe({
+      next: () => {
+        if (this.lastBounds) {
+          this.loadArticles(this.lastBounds);
+        }
+      },
+      error: (err) => {
+        console.error('Delete by keyword failed:', err);
+      },
     });
   }
 

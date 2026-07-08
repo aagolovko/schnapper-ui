@@ -58,7 +58,19 @@
   <ng-container matColumnDef="searchKeywords">
     <th mat-header-cell *matHeaderCellDef> Keyword</th>
     <td mat-cell *matCellDef="let article" class="keywords-cell">
-      {{ article.searchKeywords?.length ? article.searchKeywords.join(', ') : '-' }}
+      <span *ngIf="article.searchKeywords?.length; else noKeywords">
+        <span class="keyword-item" *ngFor="let keyword of article.searchKeywords; let last = last">
+          <a
+            class="keyword-remove"
+            href="#"
+            (click)="$event.preventDefault(); removeKeyword(keyword)"
+            [attr.aria-label]="'Delete articles by keyword ' + keyword"
+            title="Delete all articles found by this keyword"
+          >-</a>
+          <span class="keyword-text">{{ keyword }}</span><span *ngIf="!last">, </span>
+        </span>
+      </span>
+      <ng-template #noKeywords>-</ng-template>
     </td>
   </ng-container>
 

@@ -210,6 +210,27 @@ tbody tr.editing {
   overflow-y: auto;
 }
 
+.keyword-item {
+  display: inline;
+}
+
+.keyword-remove {
+  color: #b00020;
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 0.2rem;
+}
+
+.keyword-remove:hover {
+  color: #6d0012;
+}
+
+.keyword-remove.busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .text-input {
   width: 100%;
   padding: 0.5rem;

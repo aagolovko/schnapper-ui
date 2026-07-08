@@ -107,6 +107,15 @@ export class ArticlesService implements OnDestroy {
     this.http.delete<any>(`${environment.apiUrl}/articles/${pId}`, headers ? { headers } : {}).subscribe();
   }
 
+  deleteByKeyword(keyword: string) {
+    console.log(`Delete items by keyword: ${keyword}`);
+    const headers = this.buildAuthHeaders();
+    return this.http.delete<any>(
+      `${environment.apiUrl}/articles/by-keyword/${encodeURIComponent(keyword)}`,
+      headers ? { headers } : {}
+    );
+  }
+
   ignoreArticle(pId: string) {
     this.deleteArticle(pId);
   }
