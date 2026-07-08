@@ -20,14 +20,14 @@
       <div class="crawler-meta">Last run: {{ formatTimestamp(crawlerStatus?.lastRunAt) }}</div>
       <div class="crawler-meta">Next run: {{ formatTimestamp(crawlerStatus?.nextRunAt) }}</div>
       <button
-        *ngIf="user"
         type="button"
         class="crawler-button"
-        [disabled]="crawlerBusy || crawlerStatus?.isRunning"
+        [disabled]="!user || crawlerBusy || crawlerStatus?.isRunning"
         (click)="triggerCrawler()"
       >
-        {{ crawlerBusy ? 'Starting...' : 'Run now' }}
+        {{ crawlerBusy ? 'Starting...' : 'Start crawling' }}
       </button>
+      <div class="crawler-help" *ngIf="!user">Sign in to trigger a crawl manually.</div>
       <div class="crawler-message" *ngIf="crawlerActionMessage">{{ crawlerActionMessage }}</div>
       <div class="crawler-error" *ngIf="crawlerActionError">{{ crawlerActionError }}</div>
       <div class="crawler-error" *ngIf="crawlerStatusError">{{ crawlerStatusError }}</div>

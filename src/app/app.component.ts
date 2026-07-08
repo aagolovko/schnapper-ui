@@ -89,6 +89,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   triggerCrawler(): void {
+    if (!this.user) {
+      this.crawlerActionError = 'Sign in to start a crawl';
+      this.crawlerActionMessage = '';
+      return;
+    }
+
     this.crawlerBusy = true;
     this.crawlerActionError = '';
     this.crawlerActionMessage = 'Starting crawler...';

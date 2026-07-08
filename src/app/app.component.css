@@ -99,6 +99,7 @@
 }
 
 .crawler-meta,
+.crawler-help,
 .crawler-message,
 .crawler-error {
   font-size: 0.82rem;
@@ -118,6 +119,10 @@
 .crawler-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.crawler-help {
+  color: #6b4a0f;
 }
 
 .crawler-message {
