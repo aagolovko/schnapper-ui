@@ -12,11 +12,11 @@ import {LatLngBounds} from "leaflet";
 })
 export class MapViewComponent implements AfterViewInit {
 
-  private map: Leaflet.Map
+  private map!: Leaflet.Map
 
   private mapGeoToCounter: Map<string, number> = new Map<string, number>()
 
-  boundsAsJson: string
+  boundsAsJson = ''
 
   /// HOME
   latHome = 48.113104787224046
@@ -135,7 +135,7 @@ export class MapViewComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.initMap();
+    window.setTimeout(() => this.initMap(), 0);
   }
 
   doIgnore(article: any) {

@@ -1,5 +1,14 @@
 <br>
-<b><a href="{{article?.href}}">{{article?.title}}</a> </b>
+<b>
+  <a
+    class="article-link"
+    [href]="articleHref"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    {{article?.title}}
+  </a>
+</b>
 <br>
 <b>searched keywords</b>: {{article?.searchKeywords}}
 <br>

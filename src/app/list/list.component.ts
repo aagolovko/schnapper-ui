@@ -32,7 +32,7 @@ export class ListComponent implements OnInit {
   selection = new SelectionModel<Article>(true, []);
 
   constructor(
-    private articlesService: ArticlesService,
+    public articlesService: ArticlesService,
     private mapService: MapService
   ) {
   }
@@ -58,9 +58,11 @@ export class ListComponent implements OnInit {
     this.articlesService.getArticlesBounded(mapBounds).subscribe(articles => {
       console.log(`Fetched articles: ${articles.length}`);
 
-      this.dataSource = new MatTableDataSource<Article>(articles);
+      const visibleArticles = articles.filter((article) => !article.isFavorite);
+      this.dataSource = new MatTableDataSource<Article>(visibleArticles);
 
       this.dataSource.paginator = this.paginator;
+      this.selection.clear();
     });
   }
 
@@ -91,6 +93,9 @@ export class ListComponent implements OnInit {
       this.articlesService.favoriteArticle(article.id);
       article.isFavorite = true;
     })
+    const favoriteIds = new Set(this.selection.selected.map((article: Article) => article.id));
+    this.dataSource.data = this.dataSource.data.filter((article) => !favoriteIds.has(article.id));
+    this.selection.clear();
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */

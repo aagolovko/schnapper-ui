@@ -42,6 +42,8 @@ declare global {
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'my-angular';
   readonly googleClientId = environment.googleClientId;
+  readonly googleSignInEnabled = (environment as { enableGoogleSignIn?: boolean }).enableGoogleSignIn !== false;
+  readonly crawlerStatusEnabled = (environment as { enableCrawlerStatus?: boolean }).enableCrawlerStatus !== false;
   user: GoogleAuthUser | null = null;
   crawlerStatus: CrawlerStatus | null = null;
   crawlerStatusError = '';
@@ -66,8 +68,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.canonicalizeDevOrigin();
-    this.refreshCrawlerStatus();
-    this.crawlerStatusTimer = window.setInterval(() => this.refreshCrawlerStatus(), 60000);
+    if (this.crawlerStatusEnabled) {
+      this.refreshCrawlerStatus();
+      this.crawlerStatusTimer = window.setInterval(() => this.refreshCrawlerStatus(), 60000);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -116,6 +120,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private renderGoogleButton(): void {
+    if (!this.googleSignInEnabled) {
+      this.googleReady = false;
+      return;
+    }
+
     const google = window.google?.accounts?.id;
     const button = this.googleButton?.nativeElement;
 

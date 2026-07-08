@@ -10,6 +10,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class ArticlesService implements OnDestroy {
+  private readonly externalArticleBaseUrl = 'https://www.kleinanzeigen.de';
   private renderer: Renderer2;
   readonly unlistener: () => void;
 
@@ -43,10 +44,22 @@ export class ArticlesService implements OnDestroy {
             })
           );
         } else if (event.key === 'g') {
-          window.open(this.currentArticleAsSelection.href, '_blank');
+          window.open(this.resolveArticleHref(this.currentArticleAsSelection.href), '_blank', 'noopener,noreferrer');
         }
       }
     );
+  }
+
+  resolveArticleHref(href: string | undefined): string {
+    if (!href) {
+      return '#';
+    }
+
+    if (/^https?:\/\//i.test(href)) {
+      return href;
+    }
+
+    return `${this.externalArticleBaseUrl}${href.startsWith('/') ? '' : '/'}${href}`;
   }
 
   changeArticle(article: Article) {

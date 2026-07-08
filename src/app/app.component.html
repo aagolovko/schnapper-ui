@@ -12,22 +12,24 @@
 
   <div class="auth-panel">
     <div #googleButton class="google-button" [class.hidden]="user || !googleReady"></div>
+    <div class="auth-status" *ngIf="!user && !googleSignInEnabled">Google sign-in is disabled in local dev.</div>
     <div class="crawler-panel">
       <div class="crawler-heading">Crawler</div>
       <div class="crawler-status" [class.running]="crawlerStatus?.isRunning">
-        {{ crawlerStatus ? (crawlerStatus.isRunning ? 'running' : 'idle') : 'loading...' }}
+        {{ crawlerStatus ? (crawlerStatus.isRunning ? 'running' : 'idle') : (crawlerStatusEnabled ? 'loading...' : 'disabled locally') }}
       </div>
       <div class="crawler-meta">Last run: {{ formatTimestamp(crawlerStatus?.lastRunAt) }}</div>
       <div class="crawler-meta">Next run: {{ formatTimestamp(crawlerStatus?.nextRunAt) }}</div>
       <button
         type="button"
         class="crawler-button"
-        [disabled]="!user || crawlerBusy || crawlerStatus?.isRunning"
+        [disabled]="!crawlerStatusEnabled || !user || crawlerBusy || crawlerStatus?.isRunning"
         (click)="triggerCrawler()"
       >
         {{ crawlerBusy ? 'Starting...' : 'Start crawling' }}
       </button>
-      <div class="crawler-help" *ngIf="!user">Sign in to trigger a crawl manually.</div>
+      <div class="crawler-help" *ngIf="!crawlerStatusEnabled">Crawler controls are disabled in local dev.</div>
+      <div class="crawler-help" *ngIf="!user && crawlerStatusEnabled">Sign in to trigger a crawl manually.</div>
       <div class="crawler-message" *ngIf="crawlerActionMessage">{{ crawlerActionMessage }}</div>
       <div class="crawler-error" *ngIf="crawlerActionError">{{ crawlerActionError }}</div>
       <div class="crawler-error" *ngIf="crawlerStatusError">{{ crawlerStatusError }}</div>

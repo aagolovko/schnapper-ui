@@ -1,28 +1,24 @@
 <section>
   <div class="example-button-row">
-    <div class="example-flex-container">
+    <div class="example-button-container items-counter">
+      Items: {{dataSource.data.length}}
+    </div>
+    <div class="example-button-container">
+      <button
+        (click)="ignoreSelected()"
+        mat-fab color="primary" aria-label="Example icon button with a delete icon"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
 
-      <div class="example-button-container">
-        Items: {{dataSource.data.length}}
-      </div>
-
-      <div class="example-button-container">
-        <button
-          (click)="ignoreSelected()"
-          mat-fab color="primary" aria-label="Example icon button with a delete icon"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-
-      <div class="example-button-container">
-        <button
-          (click)="favoriteSelected()"
-          mat-fab aria-label="Example icon button with a heart icon"
-        >
-          <mat-icon>favorite</mat-icon>
-        </button>
-      </div>
+    <div class="example-button-container">
+      <button
+        (click)="favoriteSelected()"
+        mat-fab aria-label="Example icon button with a heart icon"
+      >
+        <mat-icon>favorite</mat-icon>
+      </button>
     </div>
 
     <div class="example-button-container">
@@ -81,7 +77,16 @@
     <td mat-cell
         [class.favorite-row]="article?.isFavorite"
         (click)="$event.stopPropagation()"
-        *matCellDef="let article"> <a href="{{article?.href}}">{{article?.title}}</a> </td>
+        *matCellDef="let article">
+      <a
+        class="article-link"
+        [href]="articlesService.resolveArticleHref(article?.href)"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{article?.title}}
+      </a>
+    </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

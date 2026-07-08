@@ -10,12 +10,14 @@ import {ArticlesService} from "src/app/services/articles.service";
 export class ArticleDetailsComponent implements OnInit {
 
   article: Article
+  articleHref = '#'
 
   constructor(private articleService: ArticlesService) {}
 
   ngOnInit() {
     this.articleService.currentArticle.subscribe( a => {
       this.article = a
+      this.articleHref = this.articleService.resolveArticleHref(a?.href)
     })
   }
 

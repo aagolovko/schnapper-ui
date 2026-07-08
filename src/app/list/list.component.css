@@ -2,6 +2,11 @@ table, th, td {
   border: 1px solid;
 }
 
+tr.mat-mdc-row,
+tr.mat-row {
+  cursor: pointer;
+}
+
 tr.favorite-row {
   background-color: #e8f5e9;
 }
@@ -17,6 +22,16 @@ tr.favorite-row:hover {
 
 tr.favorite-row td {
   border-color: #a5d6a7;
+}
+
+.article-link {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.article-link:hover {
+  color: #0d6efd;
 }
 
 img {
@@ -48,7 +63,7 @@ img {
 /* START: mat buttons */
 
 section {
-  display: table;
+  display: block;
 }
 
 .example-label {
@@ -59,8 +74,12 @@ section {
 }
 
 .example-button-row {
-  display: table-cell;
-  max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .article-image {
@@ -68,19 +87,20 @@ section {
 }
 
 .example-button-row .mat-mdc-button-base {
-  margin: 8px 8px 8px 0;
-}
-
-.example-flex-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  margin: 0;
 }
 
 .example-button-container {
   display: flex;
   justify-content: center;
-  width: 120px;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+
+.items-counter {
+  min-width: 110px;
+  white-space: nowrap;
 }
 
 /* END: mat buttons */
