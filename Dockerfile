@@ -2,9 +2,9 @@
 FROM node:22.3.0 as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
-RUN npm run build --prod
+RUN npm run build -- --configuration production
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:1.27
