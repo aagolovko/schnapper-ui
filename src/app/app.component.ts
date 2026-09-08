@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthService, GoogleAuthUser } from './services/auth.service';
 import { CrawlerService, CrawlerStatus } from './services/crawler.service';
@@ -111,12 +112,30 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (err) => {
         console.error('Crawler trigger failed:', err);
-        this.crawlerActionError = 'Crawler trigger failed';
+        this.crawlerActionError = this.getCrawlerTriggerErrorMessage(err);
         this.crawlerActionMessage = '';
         this.crawlerBusy = false;
         this.refreshCrawlerStatus();
       },
     });
+  }
+
+  private getCrawlerTriggerErrorMessage(err: unknown): string {
+    if (err instanceof HttpErrorResponse) {
+      const backendError = typeof err.error?.error === 'string' ? err.error.error : '';
+
+      if (err.status === 401) {
+        this.authService.clearToken();
+        this.user = null;
+        this.signInMessage = '';
+        this.signInError = 'Session expired. Sign in again.';
+        return backendError || 'Session expired. Sign in again.';
+      }
+
+      return backendError || `Crawler trigger failed (${err.status})`;
+    }
+
+    return 'Crawler trigger failed';
   }
 
   private renderGoogleButton(): void {
