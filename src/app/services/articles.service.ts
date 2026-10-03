@@ -116,6 +116,14 @@ export class ArticlesService implements OnDestroy {
     );
   }
 
+  purgeUnreviewed() {
+    const headers = this.buildAuthHeaders();
+    return this.http.delete<{ deletedCount: number }>(
+      `${environment.apiUrl}/articles/purge`,
+      headers ? { headers } : {}
+    );
+  }
+
   ignoreArticle(pId: string) {
     this.deleteArticle(pId);
   }

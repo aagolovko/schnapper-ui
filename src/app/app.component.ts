@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthService, GoogleAuthUser } from './services/auth.service';
 import { CrawlerService, CrawlerStatus } from './services/crawler.service';
+import { ArticlesService } from './services/articles.service';
 
 interface GoogleCredentialResponse {
   credential?: string;
@@ -51,6 +52,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   crawlerActionMessage = '';
   crawlerActionError = '';
   crawlerBusy = false;
+  purgeBusy = false;
+  purgeMessage = '';
+  purgeError = '';
   signInMessage = '';
   signInError = '';
   googleReady = false;
@@ -62,7 +66,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private crawlerService: CrawlerService
+    private crawlerService: CrawlerService,
+    private articlesService: ArticlesService
   ) {
     this.user = this.authService.getUser();
   }
@@ -118,6 +123,53 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.refreshCrawlerStatus();
       },
     });
+  }
+
+  purgeUnreviewed(): void {
+    if (!this.user) {
+      this.purgeError = 'Sign in to purge articles';
+      this.purgeMessage = '';
+      return;
+    }
+
+    const confirmed = window.confirm(
+      'Permanently delete every unreviewed article? Favoured and already-deleted articles will be kept. This cannot be undone.'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.purgeBusy = true;
+    this.purgeError = '';
+    this.purgeMessage = '';
+
+    this.articlesService.purgeUnreviewed().subscribe({
+      next: ({ deletedCount }) => {
+        this.purgeBusy = false;
+        this.purgeMessage = `Permanently removed ${deletedCount} unreviewed article${deletedCount === 1 ? '' : 's'}.`;
+        window.setTimeout(() => window.location.reload(), 1200);
+      },
+      error: (err) => {
+        console.error('Purge failed:', err);
+        this.purgeBusy = false;
+        this.purgeError = this.getPurgeErrorMessage(err);
+      },
+    });
+  }
+
+  private getPurgeErrorMessage(err: unknown): string {
+    if (err instanceof HttpErrorResponse) {
+      if (err.status === 401) {
+        this.authService.clearToken();
+        this.user = null;
+        return 'Session expired. Sign in again.';
+      }
+
+      return typeof err.error?.error === 'string' ? err.error.error : `Purge failed (${err.status})`;
+    }
+
+    return 'Purge failed';
   }
 
   private getCrawlerTriggerErrorMessage(err: unknown): string {

@@ -13,6 +13,19 @@
   <div class="auth-panel">
     <div #googleButton class="google-button" [class.hidden]="user || !googleReady"></div>
     <div class="auth-status" *ngIf="!user && !googleSignInEnabled">Google sign-in is disabled in local dev.</div>
+    <div class="purge-panel">
+      <button
+        type="button"
+        class="purge-button"
+        [disabled]="!user || purgeBusy"
+        (click)="purgeUnreviewed()"
+      >
+        {{ purgeBusy ? 'Purging...' : 'Purge' }}
+      </button>
+      <div class="purge-help">Permanently removes unreviewed articles.</div>
+      <div class="purge-message" *ngIf="purgeMessage">{{ purgeMessage }}</div>
+      <div class="purge-error" *ngIf="purgeError">{{ purgeError }}</div>
+    </div>
     <div class="crawler-panel">
       <div class="crawler-heading">Crawler</div>
       <div class="crawler-status" [class.running]="crawlerStatus?.isRunning">

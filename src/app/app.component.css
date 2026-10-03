@@ -81,6 +81,49 @@
   background: rgba(255, 255, 255, 0.72);
 }
 
+.purge-panel {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 12rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(176, 0, 32, 0.24);
+  border-radius: 1rem;
+  background: rgba(255, 250, 250, 0.78);
+}
+
+.purge-button {
+  border: 1px solid #b00020;
+  background: #b00020;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+}
+
+.purge-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.purge-help,
+.purge-message,
+.purge-error {
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.purge-help {
+  color: #6b4a0f;
+}
+
+.purge-message {
+  color: #1f7a3b;
+}
+
+.purge-error {
+  color: #b00020;
+}
+
 .crawler-heading {
   font-size: 0.72rem;
   letter-spacing: 0.16em;
